@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz : Démarche Marketing & Définition des Marchés</title>
+    <style>
+        body {
+            font-family: 'Mayan', sans-serif;
+            margin: 0;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            text-align: center;
+        }
+        .quiz-container, .summary {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-image: url('images/back.jpg.webp');
+            background-size: cover;
+            background-position: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #000;
+        }
+        .choices {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-left: 20%;
+        }
+        .choices li {
+            margin: 8px 0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #FF0000;
+            color: white;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #CC0000;
+        }
+        .summary {
+            display: none;
+        }
+        .summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        .summary li {
+            text-align: left;
+            margin-left: 20%;
+            margin-bottom: 10px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .quiz-container, .summary {
+                max-width: 90%;
+                margin: 20px auto;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .quiz-container, .summary {
+                padding: 10px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            .question {
+                font-size: 16px;
+            }
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
+                border-radius: 10px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .quiz-container, .summary {
+                max-width: 800px;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz-container" id="quiz-container">
+    <h2>QCM ENTRAINEMENT - The Extended IS-LM Model and Real vs. Nominal Interest Rates</h2>
+    <div id="question-container">
+        <!-- Les questions seront affichées ici dynamiquement -->
+    </div>
+    <button id="next-button" onclick="nextQuestion()">Suivant</button>
+</div>
+
+<div class="summary" id="summary">
+    <h3>Récapitulatif</h3>
+    <ul id="summary-list">
+        <!-- Le récapitulatif des réponses sera affiché ici -->
+    </ul>
+    <div class="score" id="score"></div>
+    <button onclick="restartQuiz()">Recommencer</button>
+</div>
+
+<script>
+    const quizData = [
+        { question: "What is the nominal interest rate?", choices: ["The interest rate adjusted for inflation", "The interest rate expressed in terms of dollars", "The interest rate that accounts for both inflation and taxes", "The interest rate in terms of goods"], correct: 1 },
+        { question: "What is the real interest rate?", choices: ["The interest rate adjusted for inflation", "The interest rate paid on bonds", "The interest rate that only applies to short-term loans", "The interest rate in terms of dollars"], correct: 0 },
+        { question: "How is the real interest rate calculated when inflation and interest rates are low?", choices: ["Real interest rate = nominal interest rate + expected inflation", "Real interest rate = nominal interest rate - expected inflation", "Real interest rate = expected inflation - nominal interest rate", "Real interest rate = nominal interest rate x expected inflation"], correct: 1 },
+        { question: "If the nominal interest rate is 5% and the expected inflation rate is 3%, what is the approximate real interest rate?", choices: ["2%", "8%", "3%", "5%"], correct: 0 },
+        { question: "What happens to the real interest rate if expected inflation increases, assuming the nominal interest rate remains constant?", choices: ["It decreases", "It increases", "It remains unchanged", "It becomes negative"], correct: 0 },
+        { question: "In the equation 1+rt=1+it/1+πe(t+1), what does rt represent?", choices: ["The nominal interest rate", "The real interest rate", "The expected inflation rate", "The price level"], correct: 1 },
+        { question: "Why is it important to distinguish between nominal and real interest rates?", choices: ["Because nominal rates are always higher", "Because real rates are what matter for borrowing and investment decisions in terms of purchasing power", "Because nominal rates are influenced only by supply and demand", "Because real rates only apply to short-term loans"], correct: 1 },
+        { question: "What is expected inflation?", choices: ["The actual inflation rate over the past year", "The projected rate at which prices are expected to increase in the future", "The difference between the nominal and real interest rates", "The inflation rate set by the central bank"], correct: 1 },
+        { question: "If a borrower expects inflation to be higher than originally thought, what effect does this have on the real cost of borrowing?", choices: ["It decreases the real cost of borrowing", "It increases the real cost of borrowing", "It has no effect on the real cost of borrowing", "It makes borrowing more expensive in nominal terms"], correct: 0 },
+        { question: "Which of the following situations would lead to a negative real interest rate?", choices: ["The nominal interest rate is higher than expected inflation", "Expected inflation is higher than the nominal interest rate", "The central bank raises interest rates sharply", "The nominal interest rate is equal to expected inflation"], correct: 1 },
+        { question: "If expected inflation is 2% and the real interest rate is 1%, what is the nominal interest rate approximately?", choices: ["3%", "1%", "0%", "2%"], correct: 0 },
+        { question: "In the IS-LM model, how does an increase in expected inflation affect the LM curve?", choices: ["It shifts the LM curve to the right", "It shifts the LM curve to the left", "It flattens the LM curve", "It has no effect on the LM curve"], correct: 3 },
+        { question: "Which of the following best describes the relationship between nominal and real interest rates during periods of high inflation?", choices: ["Real interest rates are much higher than nominal interest rates", "Nominal interest rates can increase, but real interest rates may decline", "Real interest rates are always positive during periods of high inflation", "Nominal and real interest rates are always equal"], correct: 1 },
+        { question: "What happens to real interest rates when the central bank unexpectedly tightens monetary policy by raising nominal interest rates?", choices: ["Real interest rates increase", "Real interest rates decrease", "Real interest rates remain unchanged", "Real interest rates become negative"], correct: 0 },
+        { question: "If inflation expectations are consistently wrong, what is the likely impact on real interest rates?", choices: ["They become volatile", "They remain stable despite incorrect expectations", "They adjust automatically to inflation", "They become irrelevant for decision-making"], correct: 0 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedAnswers = [];
+
+    function loadQuestion() {
+        const container = document.getElementById('question-container');
+        container.innerHTML = '';
+
+        const questionData = quizData[currentQuestionIndex];
+        const questionElem = document.createElement('div');
+        questionElem.className = 'question';
+        questionElem.textContent = questionData.question;
+
+        const choicesElem = document.createElement('ul');
+        choicesElem.className = 'choices';
+
+        questionData.choices.forEach((choice, index) => {
+            const choiceElem = document.createElement('li');
+            const choiceInput = document.createElement('input');
+            choiceInput.type = 'radio';
+            choiceInput.name = 'choice';
+            choiceInput.value = index;
+            choiceInput.id = `choice${index}`;
+            
+            const choiceLabel = document.createElement('label');
+            choiceLabel.htmlFor = `choice${index}`;
+            choiceLabel.textContent = choice;
+
+            choiceElem.appendChild(choiceInput);
+            choiceElem.appendChild(choiceLabel);
+            choicesElem.appendChild(choiceElem);
+        });
+
+        container.appendChild(questionElem);
+        container.appendChild(choicesElem);
+    }
+
+    function nextQuestion() {
+        const selectedChoice = document.querySelector('input[name="choice"]:checked');
+        if (!selectedChoice) {
+            alert("Veuillez sélectionner une réponse !");
+            return;
+        }
+
+        selectedAnswers.push(parseInt(selectedChoice.value));
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showSummary();
+        }
+    }
+
+    function showSummary() {
+        document.getElementById('quiz-container').style.display = 'none';
+        const summary = document.getElementById('summary');
+        summary.style.display = 'block';
+
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = '';
+
+        let correctAnswers = 0;
+
+        quizData.forEach((q, index) => {
+            const summaryItem = document.createElement('li');
+            summaryItem.innerHTML = `
+                <strong>${q.question}</strong><br>
+                <div style="text-align: left; margin-left: 20%;">
+                    Votre réponse: ${q.choices[selectedAnswers[index]]} - 
+                    ${selectedAnswers[index] === q.correct ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}<br>
+                    Bonne réponse: ${q.choices[q.correct]}
+                </div>
+            `;
+            summaryList.appendChild(summaryItem);
+            if (selectedAnswers[index] === q.correct) {
+                correctAnswers++;
+            }
+        });
+
+        document.getElementById('score').textContent = `Score: ${correctAnswers} / ${quizData.length}`;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        selectedAnswers = [];
+        document.getElementById('summary').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+
+
+</html>
